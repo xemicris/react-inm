@@ -12,8 +12,8 @@ export default function Page(){
         const dialog = openCb()
         dialog.current.show();
     }
-    function confirmDialog(e){
-        console.log("Diálogo confirmado"); 
+    function confirmDialog(){
+        alert("Diálogo confirmado"); 
     }
     return (
         <>

@@ -3,9 +3,8 @@ import { useEffect, useRef } from "react"
 export default function Dialog({ children, open, confirm }) {
 
     const dialogRef = useRef();
-    useEffect(() => {
-        open.set(dialogRef);
-    }, [open]);
+    
+    open.set(dialogRef);
 
     function handlerClose(ev){
         ev.stopPropagation();
