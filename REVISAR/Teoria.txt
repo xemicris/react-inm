@@ -1,0 +1,871 @@
+JAVASCRIPT:
+
+	1) Anotaciones:
+	
+		a) Prototype = Function + lo que hereda
+
+	2) Conceptos:
+		
+	3) Recursos:
+		
+		a) repositorio base: https://github.com/PedroHurtado/js-inm
+
+		b) Resumen JS: https://javascript.info/
+		
+		b) objetos:
+			1. https://developer.mozilla.org/en-US/docs/Glossary/Global_object
+			2. https://developer.mozilla.org/es/docs/Web/JavaScript/Inheritance_and_the_prototype_chain
+			3. https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Classes
+			4. https://github.com/tc39/ecma262?tab=readme-ov-file -> para ver actualizaciones
+			
+		c) closures -> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
+		
+		d) Generadores -> https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Generator
+		
+		e) Promises -> https://developer.mozilla.org/es/docs/Web/JavaScript/Reference/Global_Objects/Promise
+					-> https://dev.to/nyxtom/client-side-global-error-handling-and-unhandled-promise-rejections-2917
+					
+		f) Herencia -> https://developer.mozilla.org/es/docs/Web/API/EventTarget
+
+		g) CSS -> https://css-tricks.com/snippets/css/complete-guide-grid/
+			   ->https://css-tricks.com/snippets/css/a-guide-to-flexbox/
+
+		h) json-server -> https://www.npmjs.com/package/json-server
+
+		i) repositorio fetch: https://github.com/Iarlvarezro/Pizzeria-GNT-Frontend
+
+		j) refactorizar: https://lostechies.com/wp-content/uploads/2011/03/31DaysRefactoring.pdf
+
+		j) 
+
+		k) observer - pub sub: https://hackernoon.com/es/observador-vs-pub-sub-patron-50d3b27f838c
+
+		l) patrones: https://refactoring.guru/es/design-patterns/factory-method
+
+
+	4) Sinxtaxis:
+
+		a) Objetos: 
+		
+			1. Antes de 2015 JS solo tiene constructores, métodos de instancia y estáticos
+
+				//Constructor y tipo
+				function Foo(name){
+					this.name = name;
+				}
+
+				//Método de instancia
+				Foo.prototype.write = function(){
+					console.log(this.name);
+				}
+
+				//Método estático
+				Foo.write = function(){
+					console.log("static method");
+				}
+		
+			2. Tras el ES6
+
+				class Foo{
+					//atributo privado
+					#name
+					constructor(name){
+						this.#name = name;
+					}
+
+					write(){
+						console.log(this.#name);
+					}
+
+					static write(){
+						console.log("static method");
+					}
+				}
+				
+		b) Ámbito (casos en los que se pierde el this) -> una función flecha no pierde el ámbito
+													   -> Usar bind, call o apply para encerrar el this en su ámbito
+		
+			1. Cuando se asigna una función a una variable:
+
+				window.x = 10;
+				window.foo = {
+					x:11,
+					write:function(){
+						console.log(this.x);
+					}
+				}
+
+				window.foo.write();
+				window.writer = window.foo.write()
+				window.writer()
+
+			2. Cuando pasas como argumento a otra función una función:
+			
+				class Bar{
+					constructor(writer){
+						writer();
+						this.writer = writer;
+						this.writer();
+					}
+				}
+
+				class Foo{
+					constructor(){
+						new Bar(this.writer.bind(this))
+					}
+
+					writer(){
+						console.log(this);
+					}
+				}
+
+				const bar = {}
+
+				function Foo(name){
+					this.name = name;
+				}
+
+				Foo.call(bar, "Chema")
+				Foo.apply(bar, ["Chema"])
+				
+				
+		c) Dadas las siguientes funciones constructoras crear una función factoria que simule el funcionamiento del operador new
+
+				function Foo(name){
+					this.name = name
+				}
+
+				function Bar(name, surname){
+					this.name = name;
+					this.surname = surname;
+				}
+
+				function factory(scope, strType, ...args){
+					//obtener desde el ámbito windows la función constructora
+					const constructor = scope[strType];
+					if(!constructor){
+						throw `el ${strType} no existe`;
+					}
+					//crear this -> una instancia del prototipo
+					const instancia = Object.create(constructor.prototype);
+
+					//inicializar
+					constructor.apply(instancia, args);
+
+					return instancia;
+				}
+
+				factory(window, "Foo", "Chema")
+				factory(window, "Bar", "Chema", "Calavia")
+			
+		d) Estructuras: importante saber -> filter, find, sort, map y reduce (permite reducir cualquier objeto)
+		
+			1. filter
+					const a = [1,2,3,4,5,6];
+					
+					a.filter(v=>v%2===0) // [2,4,6]
+					
+					function filter(array, predicate){
+						const newArray = [];
+						for(const value of array){
+							if(predicate(value)){
+								newArray.push(value)
+							}
+						}
+						return newArray;
+					}
+				
+			2. find -> a.find(v=>v%2===0) //2
+
+			3. sort
+
+			4. map
+					const map = new Map();
+					map.set("key", 1)
+					map.get("key")
+
+			5. reduce -> a = acumulado. 
+					  -> v = initial value (opcional)
+					  
+					a.reduce((a,v)=>a+v,100)
+
+					/*
+						0+1=1
+						1+2=3
+						3+3=6
+						6+4=10
+						10+5=15
+						15+6=21
+					*/ 
+					a[b[o]] = b[1]
+					
+		e) Suggar sintaxis:
+		
+			1. rest parameters -> solo uno y debe ser el último
+
+					function Foo(initialvalue,...rest){
+						return rest.reduce((a, v)=> a+v, initialvalue)
+					}
+
+			2. deault parameters
+			
+					function sum(a, b=5){
+						return a+b;
+					}
+					sum(3) //8
+					sum(3, 10) //13
+
+			3. desestructuration -> de objetos y arrays
+
+					const [a1,b1] = [1,2,3,4] //a =1, b = 2, el resto se pierde
+					const [a2,b2,...rest] = [1,2,3,4] // a=1, b=2, el resto [3, 4]
+
+					const {id, name, ...restobj} = {id:1, name: 'predro', phone: 583854756949}
+
+					console.log('hola');
+
+			4. spread operator
+			
+					const a = [1,2,3];
+					const b = [4,5,6];
+					const c = [...a,...b]
+
+					const foo = {id:1, name: 'chema'}
+					const bar = {name: 'pedro hurtado', baz:{id:1}}
+
+					const result = {...foo,...bar}
+
+					result.baz.id = 55
+					bar.baz.id // modifica el objeto original -> para que no lo modifique
+
+					//const result2 = {...foo, ...structuredClone(...bar)}
+			 
+			5. operador de cortocircuito
+
+					if(a!==null){
+						//a()
+					}
+
+					a && //a()
+
+					function foo2(options){
+						options = options || {}
+					}
+
+			6. Elvis operator -> Object.func?.(args)
+
+
+		f) Callback -> pasar una función a otra función
+		
+				const data = [1,2,3,4,5,6];
+				data.filter((v)=> v%2 === 0) //no pierde el ámbito
+				data.filter(function(v){ //pierde el ámbito
+					return v%2 === 0;
+				})
+		
+		g) closure -> la creación de la instancia de un objeto -> guarda un estado y estará allí mientras el objeto no se destruya
+		
+			Ejemplo1:
+				function sum(a){
+					//return (b)=>a+b
+					
+					return function(b){
+						debugger
+						return a+b
+					}
+				}
+				
+				const result = sum(5)
+
+				console.log(sum(5)(3))
+				console.log(result + 100);
+
+			Ejemplo 2:
+
+				function events(node, event, callback){
+					node.addEventListener(event, callback)
+					return ()=>node.removeEventListener(event, callback)
+				}
+
+				const disposable = events(document, 'click', console.log)
+
+				//para terminar el evento -> disposable()
+
+			Ejemplo 3:
+
+				function signal(initialValue){
+					let value = initialValue;
+					const fn = ()=>value;
+					fn.set = (v)=> value = v;
+					return fn;
+				}
+
+				const resultado = signal(0)
+				console.log(resultado());
+				resultado.set(55)
+				console.log(resultado());
+		
+		h) Generadores -> 
+		
+			1. forma de hacer un filter bloqueante -> devuelve cuando ha terminado de procesar
+			
+				function filter(array, predicate){
+					const newArray = [];
+					for(const value of array){
+						if(predicate(value)) newArray.push(value)
+					}
+					return newArray;
+				}
+
+			2. No bloqueante y sin reserva de memoria -> mejor para pocos y muchos datos -> no usar return porque yield va devolviendo 
+														poco a poco
+
+				function* filter(array, predicate){
+					for(const value of array){
+						if(predicate(value)) yield value
+					}
+				}
+
+				const result2 = filter([1,2,3,4,5,6], (v) => v%2===0);
+				console.log(result2.next());
+				console.log(result2.next());
+				console.log(result2.next());
+				console.log(result2.next());
+
+				const generator = filter([1,2,3,4,5,6], (v) => v%2===0);
+				//iterar
+				generator.next(); // iterar hasta que devuelva done:true
+				//iteradores automáticos
+				for(let v of generator){
+
+				}
+				const newArray2 = [...generator]
+
+			3. Genrador de días -> produce secuencialmente números del 1 al 31.
+
+				export default function* GeneradorDias(){
+					let indice = 1;
+					while(indice <= 31){
+						yield indice++
+					}
+				}
+				Explicación:
+					* l3 -> En cada iteración, el generador emite (yield) el valor actual de indice y luego incrementa indice en 1.
+						 -> Cuando indice alcanza el valor de 31, el bucle se detiene y el generador finaliza.
+					
+		i) Promises:
+		
+			1. Fetch: objeto que en el constructor (new Promise) se le pasa un callback con dos argumentos:
+					* resolve con then(n)
+					* reject se resuelve con catch -> sino da error uncaught
+
+
+						class ServiceCustomer{
+							//id: codigo cliente
+							static get(id){
+								return new Promise((resolve, reject)=>{
+									if(id===1){
+										resolve({id})
+									}else{
+										reject("el cliente no existe")
+									}
+								})
+							}
+						}
+
+						class ServicesInvoices{
+							static get(clientID){
+								return new Promise((resolve, reject)=>{
+									if(clientID === 2){
+										resolve({clientID, invoices:[]})
+									}else{
+										reject("el cliente no tiene facturas")
+									}
+								})
+							}
+						}
+
+						function main(id){
+							ServiceCustomer.get(id)
+							.then(customer => ServicesInvoices.get(customer.id))
+							.then(invoices=>console.log(invoices))
+							.catch(err=>console.log(err))
+						}
+
+						console.log(main(1))
+
+			2. Async | Await:
+			
+						async function foo(){
+							return 1
+						}
+						console.log(foo());
+
+						class ServiceCustomer2{
+							//id: codigo cliente
+							static async get(id){
+								if(id===1){
+									return {id}
+								}else{
+									throw "El cliente no existe"
+								}
+								
+							}
+						}
+
+						class ServicesInvoices2{
+							static get(clientID){
+								return new Promise((resolve, reject)=>{
+									if(clientID === 1){
+										resolve({clientID, invoices:[]})
+									}else{
+										reject("el cliente no tiene facturas")
+									}
+								})
+							}
+						}
+
+						async function main2(id){
+							try{
+								const customer = await ServiceCustomer2.get(id)
+								const invoices = await ServicesInvoices2.get(customer)
+								console.log(invoices);
+							}catch(err){
+								console.log(err);
+							}
+						}
+
+						main2(1)
+
+
+		j) Herencia -> cadena de herencia:
+		
+			HTMLDivElement          Text
+			HTMLElement             CharacterData
+			Element
+
+			Node                    Node
+			EventTarget             EventTarget
+			Object                  Object
+			Null                    Null
+
+
+		k) Modules: archivo js donde todo es privado salvo que se exporte -> los {} es para desestructurar un objeto
+		
+				1. Ejemplos de importaciones:
+				
+					básica -> import {mult, resta as restita} from './operaciones'
+					con alias -> import * as op from '.operaciones '
+					con autoimportación -> import './run.js' | import './pages/menu.js'
+					
+				2. Ejemplos de exportaciones:
+				
+					básicas -> se exportan las 4 funciones pero el resto permanece privado
+
+						export const sum = (a, b) => a+b;
+						export const resta = (a, b) => a-b;
+						export const div = (a, b) => a/b;
+						export const mult = (a, b) => a*b;
+						
+					con autoimportación:
+					
+						!function foo(){
+							console.log("Se imprime");
+						}()
+						
+						--Creación de un menú--
+						
+						!function menu(){
+							document.addEventListener('click', (e)=>{
+								e.stopPropagation();
+								e.preventDefault();
+								//composedPath -> 
+								const node = e.composedPath().find((n)=> n.dataset && 'page' in n.dataset)
+								if(node){
+									const {page} = node.dataset
+									const url = `./${page}.js`
+									import(url).then(m=>m.default())
+								}
+							})
+						}
+						
+						export default function Pagina1(){
+							console.log("Pagina1");
+						}
+						--Fin creación de un menú--
+
+		l) Función para formatear un objeto de fecha en una cadena de texto que representa la hora en un formato específico. 
+		
+				function getTime(date){
+					let options = {hour: 'numeric', minute: 'numeric', second: 'numeric'}
+					return new Intl.DateTimeFormat('es-ES', options).format(date)
+				}
+				Explicación:
+					* l1 -> Se crea un objeto options que contiene las opciones de formato para la hora -> se muestren en formato numérico 
+					* l2 -> <Intl.DateTimeFormat> permite formmatear el objeto fecha según llas opciones de formato y el idioma especificados
+							<format(date)>: funnción que toma el objeto de fecha date y lo formatea según las opciones proporcionadas en el 
+											paso anterior. Devuelve una cadena de texto que representa la hora en el formato especificado.
+					
+
+REACT:
+
+	1) Instalaciones y procedimientos:
+						
+		a) json-server: simula que es un servidor -> npm install -g json-server 
+												  -> arrancarlo -> json-server --watch db.json
+
+		b) 
+
+	2) Procedimientos:
+
+		a) Para ejecutar la versión de producción:
+			1. Abrior powershell con permisos de administrador
+			2. <npm install -g serve> -> la primera vez
+			3. <npm run build> -> para construir la app de producción
+			4. <serve -s build> -> para servir la app 
+	
+
+	2) Conceptos y otros datos:
+
+		a) React renderiza en el servidor y en el cliente (npx-create-react-app)
+			-> CSR(client side rendering) -> html + js -> no se puede asociar a SEO
+			-> SSR(server side rendering) -> este se puede asociar a SEO
+
+		b) Node_modules -> hay que marcarlo en el "git ignore"
+
+		c) Binding o interpolation: obtener unos datos y pintarlos
+
+		d) No se puede poner un <if> dentro del return. La forma de aplicarlo es:
+			1. Con un <if> dentro de una función
+			2. Con un Ternario
+			3. Cortocircuito -> value && div (si existe el valor aplicar el div)
+
+		e) Los componentes deben ser cajas estancas para que no se pueda acceder al js, html y css -> con CSS se consigue a través del 
+			empaquetador -> cómo hacerlo con "webpack":
+
+				a) nombre fichero css: Calendario.module.css
+				b) Como importar: import styles from './Calendario.module.css';
+
+		f) <ReactDOM.createRoot>: método para renderizar una aplicación de React en el DOM -> Hay que pasarle el nodo raíz como argumento y 
+								devuelve el objeto root -> al método <render> del objeto root se le pasa el componente principal.
+								
+								const root = document.getElementById('root');
+								const rootElement = ReactDOM.createRoot(root);
+								rootElement.render(<App />);
+
+		g) <React.StrictMode>: componente especial proporcionado por React que se utiliza para activar el modo estricto. Este modo es una 
+							  herramienta de desarrollo que ayuda a detectar posibles problemas. No afecta a la versión en producción
+
+								* Detectar componentes con efectos secundarios secundarios.
+								* Advertir sobre el uso de API obsoletas.
+								* Detectar actualizaciones de estado potencialmente problemáticas.
+								* Detectar el uso de métodos de ciclo de vida obsoletos.
+		h) Router: 
+			1. SPA (Single page application)
+			2. MPA (multipe page application) -> patrón de diseño MVC
+			3. PWA (progressive web apps) -> service worker mdn (buscar) -> https://developer.chrome.com/blog/beyond-spa?hl=es-419>
+			4. CSR(la renderiza el cliente y es un spa), SSR (cada vez que hay una petición se renderiza en el backend), SSG (pre rendering de todas las páginas)
+			Mirar código isomórfico
+			windows pushstate() javascript -> https://developer.mozilla.org/en-US/docs/Web/API/History/pushState -> esto lo hace una spa
+
+			react router -> https://reactrouter.com/en/main/start/tutorial -> npm install react-router-dom
+			Pasos:
+				a) Crear una carpeta -> pages y dentro 3 páginas y un menú
+				b) buscar outlet -> es el contenido de cada página y link es el menú -> engaña al navegador para que no recargue
+				c) route es lo que permite definir las rutas
+				d) en la raiz de la app poner BrowserRouter -> para que funcione
+				Code splitting
+				buscar tree-shaking
+
+	3) Sintaxis y explicaciones:
+
+		a) Componente que renderiza un array de datos en forma de elementos <div>
+
+				export default function Array(){
+					const data = [1,2,3,4,5,6];
+					return (
+						<>
+							{data.map(v => <div key={v}>{v}</div>)}
+						</>
+					)
+				}
+				Explicación:
+					* l2 -> El componente devuelve lo que está dentro de este bloque de código.
+					* l3 -> l5: Esto es un fragmento de React. Permite devolver múltiples elementos sin agregar un nodo padre adicional. Es una
+							  forma abreviada de <React.Fragment> </React.Fragment>.
+					
+					* l4: map(): permite crear un nuevo array de elementos <div>, donde cada elemento del array original se representa como un <div> con su valor como texto interno.
+					
+						  key={v}: El atributo key es necesario al usar el método map() en React. Ayuda a React a identificar qué elementos 
+						  			han cambiado, se añaden o se eliminan. En este caso, cada <div> tiene una clave única que es el valor del
+									elemento correspondiente del array data.
+					
+						  {v}: Dentro de cada <div>, se muestra el valor correspondiente del array data.
+
+		b) Componente que usa el hook <useState> y que representa una lista de elementos que se puede ampliar haciendo clic en el botón "Add"
+		   lo que agrega un nuevo elemento al final de la lista.
+		
+				import { useState } from "react";
+
+				export default function ArrayState() {
+					const [data, setData] = useState([1, 2, 3]);
+					function handlerClick() {
+						// Se debe evitar modificar directamente el estado
+						// Se crea una nueva copia del array y se agrega un nuevo elemento
+						const newData = [...data, data.length + 1];
+						setData(newData);
+					}
+				
+					return (
+						<>
+							<button onClick={handlerClick}>Add</button>
+							{data.map(v => <div key={v}>{v}</div>)}
+						</>
+					);
+				}
+				Explicación:
+					* l3 -> se crea una nueva copia del array data utilizando el operador de propagación (...data), y se agrega un nuevo 
+							elemento al final de la nueva copia. El nuevo elemento es simplemente la longitud actual del array más 1 
+					* l4 -> la nueva copia actualizada del array se establece como el nuevo estado utilizando la función setData.
+					
+		c)  <Calendario.js>: 
+
+					function Calendario() {
+						function handlerDay(day){
+							console.log(day);
+						}
+						function handlerClick(e){
+							e.stopPropagation();
+							const node = e.nativeEvent.composedPath().find(n=>n.dataset && 'day' in n.dataset)
+							if(node){
+								const {day} = node.dataset
+								console.log(day);
+							}
+						}
+						const day = [...GeneradorDias()];
+						return (
+							<div onClick={handlerClick} className={styles.calendarioContenedor}>
+								{day.map(day => <Day key={day} {...{day, handlerDay}}/>)}
+							</div>
+						);
+					}
+				Explicación:
+					* l5 -> detiene el evento para que no active otros escuchadores de eventos que puedan estar registrados en elementos padre.
+					* l6 -> encuentra el elemento que se hizo clic (node) utilizando el método composedPath(), que devuelve la ruta del evento, que es una matriz de objetos que representan todos los nodos en los que el evento ha sido activado en su camino hacia la raíz del documento. El método .find() luego busca un elemento con una propiedad dataset que contenga una clave llamada 'day'.
+					* l[7,8,9] -> Si se encuentra dicho elemento (node no es nulo), extrae el valor del atributo day de su conjunto de datos y lo registra en la consola.
+					* l14 -> Establece la clase CSS del elemento <div>. El nombre de la clase se obtiene a través de la variable styles.calendarioContenedor ya que
+					      se está usando CSS Modules para modularizar estilos.
+
+					* l15 -> Mapeo sobre la variable day (array de días). Para cada elemento se está crea un componente <Day> con las siguientes
+					 		props:
+
+								key={day}: Propiedad clave necesaria por React para identificar de manera única cada elemento de una lista y optimizar su renderizado.
+								{...{day, handlerDay}}: Esto pasa dos props (day y handlerDay) al componente <Day>. La notación {...{day, handlerDay}} es una forma de pasar múltiples props a un componente en React. 
+												day es el día que se está representando y handlerDay el manejador de eventos relacionado con ese día.
+
+		d) Children: prop que se utiliza para representar cualquier contenido que se pase al componente Child como su hijo:
+
+				export default function Parent(){
+					return(
+						<Child>
+							<div>Hello World</div>
+							<div>Hello World1</div>
+						</Child>
+					)
+				}
+
+				export default function Child({children}){
+					return(
+						<>
+							<div>Div Child</div>
+							{children}
+						</>
+					)
+				}
+
+		e) Función que usa <useState> y <useEffect> para actualizar la hora cada segundo
+
+				export function useTimer(initialDate, interval = 1000){
+					const [date, setDate] = useState(initialDate);
+				
+					useEffect(()=>{
+						const handler = setInterval(()=>setDate(new Date()), interval)
+						return ()=>clearInterval(handler)
+					})
+					return getTime(date)
+				}
+				Explicación:
+					* l1 -> <useState> para almacenar el estado de la fecha actual.
+					* l2 -> <useEffect> para iniciar un temporizador que actualiza la fecha utilizando setDate(new Date()) cada vez que el 
+							intervalo especificado ha pasado. Se devuelve el tiempo formateado utilizando la función getTime.
+		
+		
+
+	3) Patrones vistos:
+
+		a) observer pattern
+		b) publish subscribe pattern (pubsub)
+
+	4) Recursos: 
+
+		a) Repositorio base: https://github.com/PedroHurtado/react-inm1
+
+		b) Agregar una hoja de estilo CSS: https://create-react-app.dev/docs/adding-a-css-modules-stylesheet
+
+		c) common_types: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+
+
+OTROS CONCEPTOS:
+
+	1) Consola del navegador:
+	
+		a) <Sources> -> <ctrl + p> -> lista de todos los archivos descargados
+
+	2) resFull:
+
+		a) Url de partida:
+
+				server:http://localhost:8080
+				path:"/pizzas"
+	
+		b) Criterios a seguir en la url:
+
+			1. No debe expresar acciones -> /pizzas/add -> para eso existen los verbos GET, POST, PUT, DELETE, GET
+			2. No debe expresar formato -> terminar en <.json>, <.html> -> para eso están las cabeceras <content-type> o <accept>
+
+		c) Crear un recurso:
+
+			1. url: /pizzas
+
+			2. verbo: POST
+
+			3. Request:
+    			* Headers -> content-type:"application/json" -> le dice al servidor que lo que le voy a mandar es de un tipo x
+    			* Body -> los datos necesarios {...}
+
+			4. Response (servidor):
+    			* Headers: content-type:"application/json"
+				* body: {bytes}
+
+			5. Status code: 
+				OK              ERROR
+				201 (created)   400 (bad request) OR 409 (conflict)
+								401 (unauthorized)
+								403 (forbiden) -> tu rol no permite crear pizzas
+								500 (base de datos se ha desconectado)
+			6. Ejemplo:
+				const pizza = {name:'margarita', price:7}
+				fetch("http://localhost:3000/pizzas", {method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(pizza))
+
+		d) Modificar un recurso
+
+    		1. url: /pizzas/:id
+
+    		2. verbo: PUT
+
+    		3. Request:
+        		* Headers -> content-type:"application/json"
+        		* body -> {...}
+
+    		4. Response (servidor): 
+				* Headers: content-type:"application/json"
+        		* body -> {...}
+
+			5. Status code: 
+			OK              	ERROR
+			200 (ok)   			400 (bad request) OR 409 (conflict)
+			204	(No content)	401 (unauthorized)
+								403 (forbiden) -> tu rol no permite crear pizzas
+								404 (not found)
+								500 (base de datos se ha desconectado)
+							
+		e) Eliminar un recurso:
+
+    		1. url: /pizzas/:id
+
+    		2. verbo: DELETE
+
+    		3. Request:
+        		* Headers: content-type:"application/json"
+        		* body -> {
+					opcional -> para borrar 3 emails no poner -> /email/3/2/1
+							 -> Se envía en el body
+				}
+
+    		4. Response:
+				* Headers: content-type:"application/json"
+				* body -> {...}
+
+			5. Status code: 
+			OK              	ERROR
+			204	(No content)	400 (bad request) OR 409 (conflict)
+								401 (unauthorized)
+								403 (forbiden) -> tu rol no permite crear pizzas
+								404 (not found)
+								500 (base de datos se ha desconectado) 
+
+    	f) Recuperar un recurso:
+
+			1. url: /pizzas/:id
+
+    		2. verbo: GET (no permite body)
+
+    		3. Request:
+        		* Headers -> content-type:"application/json"
+        
+			4. Response:
+        		* Headers: content-type:"application/json"
+        		* body -> {...}
+
+			5. Status code: 
+			OK              	ERROR
+			204	(No content)	400 (bad request) OR 409 (conflict)
+								401 (unauthorized)
+								403 (forbiden) -> tu rol no permite crear pizzas
+								404 (not found)
+								500 (base de datos se ha desconectado) 
+
+
+	3) Compilar: proceso mediante el cual un programa escrito en un lenguaje de programación de alto nivel, como C, C++, Java, etc., 
+	se convierte en un lenguaje de bajo nivel, específicamente en lenguaje de máquina, que puede entender y ejecutar directamente el 
+	procesador de la computadora. Proceso:
+
+		* Preprocesamiento: se realizan tareas como la inclusión de archivos de cabecera, la expansión de macros y la eliminación de 
+							comentarios. Esto se hace para preparar el código fuente para la compilación real.
+
+		* Compilación: el código fuente preprocesado se traduce al código objeto en lenguaje de máquina específico de la arquitectura
+						de la computadora. Este código objeto todavía no es ejecutable y contiene instrucciones de bajo nivel pero no
+							está en un formato ejecutable.
+
+		* Enlace (Linking): Si el programa está compuesto de múltiples archivos fuente o hace uso de bibliotecas externas, es 
+							necesario vincular todas estas partes para formar un programa ejecutable. Durante este proceso, se 
+							resuelven las referencias a funciones y variables externas, y se vincula el código objeto generado 
+							durante la compilación con las bibliotecas necesarias para crear un archivo ejecutable final.
+
+		* Optimización: Algunos compiladores tienen etapas de optimización que buscan mejorar el rendimiento del código resultante. 
+						Esto puede incluir la eliminación de código muerto, la reorganización de instrucciones para mejorar la 
+						eficiencia, entre otros.
+
+		* Generación de ejecutable: Se genera el archivo ejecutable que puede ser ejecutado por el sistema operativo. Este archivo 
+									contiene el código de máquina final junto con cualquier información necesaria para que el 
+									sistema operativo pueda cargar y ejecutar el programa correctamente.
+
+
+	4) AST ("Abstract Syntax Tree") (Árbol de Sintaxis Abstracta): estructura de datos que representa la estructura gramatical de 
+		un programa de computadora expresado en un lenguaje de programación, pero de una manera abstracta y jerárquica. Cuando se 
+		escribe código en un lenguaje de programación, como Python, C++, Java, este código sigue reglas sintácticas definidas por el 
+		propio lenguaje. El AST captura estas reglas sintácticas de manera estructurada. Cada nodo en el AST representa una parte del
+			código fuente original y sus relaciones con otras partes. Es una representación intermedia importante en el proceso de 
+			compilación de un programa. Después de analizar léxicamente y sintácticamente el código fuente, el compilador o intérprete 
+			construye el AST como una representación estructurada del código. Este AST luego se puede utilizar para realizar diversas 
+			operaciones, como optimizaciones, análisis estático, generación de código intermedio, entre otras, dependiendo del contexto 
+			del compilador o intérprete y de las herramientas utilizadas.
+
+			c) 
+		
+	5) sourcemap
+
+	6) $0 command line debug api: https://developer.chrome.com/docs/devtools/console/utilities?hl=es-419
+
+	Buscar service locator
+	recomienda mirar redux

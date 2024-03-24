@@ -1,0 +1,14 @@
+pizza = {
+    id, 
+    name,
+    description,
+    price,
+    url,
+    ingredients:[
+        {
+            id,
+            name,
+            price
+        }
+    ]
+}
