@@ -869,3 +869,32 @@ OTROS CONCEPTOS:
 
 	Buscar service locator
 	recomienda mirar redux
+
+	application -> back/forward cache -> que no recargue cuando vas hacia delante o detrás -> mirar memoria caché atrás/adelante -> https://web.dev/articles/bfcache?utm_source=devtools&hl=es-419
+
+	365*24*60*60 -> tiempo máximo de caché -> el html mediante un código 204 debe indicar si algo ha cambiado y sino ha cambiado no recargar nada
+	primero broli y luego gzip
+
+	fuentes -> fout, foit, foft -> https://css-tricks.com/fout-foit-foft/ -> parámetro poner: mdn font-display -> font-display: swap
+	imagenes -> avif mejor que webp y dos formatos distintos como mínimo-> usar picture para distintos dispositivos móviles -> no usar media queries
+	los iconos deberían ser todos svg
+	en imágenes poner siempre width y height
+	para las imágenes de portada poner "preload" -> https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/rel/preload  -> también se puede
+	hacer con fuentes, css, scripts
+	dns-prefetch -> para que localice primero el dns
+	preconect -> para que conecte primero antes de descargar
+	api -> fetchpriority -> https://web.dev/articles/fetch-priority?hl=es-419
+
+	videos poner en iframe y las imágenes también
+	intersection observer API -> https://developer.mozilla.org/en-US/docs/Web/API/Intersection_Observer_API -> mezclar con el useEffect
+
+	CSS: debe tener: https://github.com/Iarlvarezro/Pizzeria-GNT-Frontend/tree/master/src/styles
+	index.css -> para juntar todo el css
+	reset.css -> resetea el explorador -> usarlo
+	css property -> crear un archivo separado con las properties fijas como los colores (a nivel de root)
+	fonts.css -> swap
+	elevation.css -> para que no haya colisión por el z-index
+	spaces.css -> espacios para margin o padding
+	base.css -> h1 tiene semántica y .h1 no pero tendrán el mismo tamaño
+	util.css -> 
+

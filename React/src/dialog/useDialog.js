@@ -1,17 +1,14 @@
-export function useDialog(){
+import { DIALOGMODE } from "./dialogMode";
 
-    function open(){
+export function useDialog(mode = DIALOGMODE.show){
 
-        let _dialog;
+    let openDialog;
 
-        const fn = ()=>{
-            return _dialog
-        }
-
-        fn.set = (dialog)=>_dialog = dialog;
-
-        return fn;
+    const fn = (ev)=>{
+        openDialog && openDialog(ev, mode)
     }
-    
-    return open;
+
+    fn.set = (open)=> openDialog = open;
+
+    return fn;
 }

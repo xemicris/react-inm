@@ -1,11 +1,21 @@
-import { useEffect, useRef } from "react"
+import { useRef } from "react"
+import { DIALOGMODE } from "./dialogMode";
 
 export default function Dialog({ children, open, confirm }) {
 
     const dialogRef = useRef();
     
-    open.set(dialogRef);
+    open.set(openDialog);
 
+    function openDialog(ev, mode){
+        ev.stopPropagation();
+        if(mode === DIALOGMODE.show){
+            dialogRef.current.show();
+        }else{
+            dialogRef.current.showModal();
+        }
+    }
+   
     function handlerClose(ev){
         ev.stopPropagation();
         dialogRef.current.close();
