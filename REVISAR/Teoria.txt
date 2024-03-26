@@ -897,4 +897,11 @@ OTROS CONCEPTOS:
 	spaces.css -> espacios para margin o padding
 	base.css -> h1 tiene semántica y .h1 no pero tendrán el mismo tamaño
 	util.css -> 
+	https://stackblitz.com/ -> ver componentes online 
+
+	actualizaciones javascript -> web.dev -> blog
+	youtube -> layout land -> creadora de grid y flex
+	web.dev -> learn -> learnHTML, LearnImages, Learn Responsive Design
+	más -> patterns
+	explore -> performance -> Core Web Vitals (medidas ligthhouse)
 
